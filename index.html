@@ -1,19 +1,243 @@
 <!DOCTYPE html>
 <html lang="ta">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0a1a0e" />
-    <meta name="description" content="AgriSense AI — தமிழ்நாடு விவசாயிகளுக்கான AI உதவியாளர்" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet" />
-    <title>AgriSense AI 🌾</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #0a1a0e; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AgriSense AI 🌾</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Noto Sans Tamil',sans-serif;background:#0a1a0e;color:#e8f5e0;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+  #header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(10,30,12,0.9);border-bottom:1px solid rgba(100,200,80,0.2);}
+  #logo{display:flex;align-items:center;gap:12px;}
+  #logo-icon{font-size:30px;}
+  #logo-title{font-size:20px;font-weight:700;color:#7ee87a;}
+  #logo-sub{font-size:11px;color:#5a9954;}
+  #badge{background:rgba(50,120,40,0.3);border:1px solid rgba(100,200,80,0.3);border-radius:20px;padding:4px 12px;font-size:12px;color:#7ee87a;}
+  #chat{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px;}
+  .row{display:flex;align-items:flex-end;gap:8px;}
+  .row.user{justify-content:flex-end;}
+  .row.ai{justify-content:flex-start;}
+  .av{font-size:20px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(100,200,80,0.2);background:rgba(50,120,40,0.25);flex-shrink:0;}
+  .uav{font-size:20px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(220,180,40,0.3);background:rgba(200,150,20,0.2);flex-shrink:0;}
+  .bubble{padding:12px 16px;font-size:14px;line-height:1.8;max-width:78%;}
+  .ai-bubble{background:rgba(20,55,18,0.9);border:1px solid rgba(100,200,80,0.2);border-radius:16px 16px 16px 4px;color:#d4f0cc;}
+  .user-bubble{background:linear-gradient(135deg,rgba(80,160,50,0.8),rgba(50,120,30,0.9));border:1px solid rgba(120,220,80,0.3);border-radius:16px 16px 4px 16px;color:#e8ffe0;}
+  .sent-img{max-width:180px;max-height:140px;border-radius:10px;border:2px solid rgba(120,220,80,0.4);object-fit:cover;margin-bottom:4px;}
+  .thinking{color:#7ee87a;font-style:italic;font-size:13px;}
+  #chips{padding:0 16px 8px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .chip{flex-shrink:0;background:rgba(30,80,20,0.5);border:1px solid rgba(100,200,80,0.25);border-radius:20px;padding:6px 14px;font-size:12px;color:#9de88a;cursor:pointer;white-space:nowrap;font-family:'Noto Sans Tamil',sans-serif;}
+  #preview-bar{display:none;align-items:center;gap:10px;padding:8px 16px;background:rgba(15,45,12,0.9);border-top:1px solid rgba(100,200,80,0.15);}
+  #preview-thumb{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid rgba(120,220,80,0.4);}
+  #preview-label{flex:1;font-size:12px;color:#9de88a;}
+  #remove-btn{background:rgba(200,60,60,0.3);border:1px solid rgba(255,100,100,0.3);border-radius:50%;width:24px;height:24px;color:#ff9090;font-size:11px;cursor:pointer;}
+  #input-area{padding:10px 16px 14px;background:rgba(10,25,10,0.95);border-top:1px solid rgba(100,200,80,0.15);}
+  #input-wrap{display:flex;align-items:flex-end;gap:8px;background:rgba(20,55,18,0.6);border:1px solid rgba(100,200,80,0.25);border-radius:14px;padding:8px 10px;}
+  #upload-btn{background:rgba(40,100,30,0.4);border:1px solid rgba(100,200,80,0.2);border-radius:10px;width:36px;height:36px;font-size:18px;cursor:pointer;flex-shrink:0;}
+  #msg-input{flex:1;background:transparent;border:none;outline:none;color:#e8f5e0;font-size:14px;line-height:1.5;font-family:'Noto Sans Tamil',sans-serif;resize:none;min-height:22px;max-height:100px;}
+  #send-btn{background:linear-gradient(135deg,#4caf30,#2d7a1a);border:none;border-radius:10px;width:36px;height:36px;font-size:16px;color:#fff;cursor:pointer;flex-shrink:0;}
+  #footer-txt{text-align:center;font-size:10px;color:#3a6630;margin-top:8px;}
+  #api-bar{padding:10px 16px;background:rgba(40,10,10,0.9);border-bottom:1px solid rgba(255,100,80,0.2);display:flex;align-items:center;gap:8px;}
+  #api-input{flex:1;background:rgba(30,10,10,0.6);border:1px solid rgba(255,100,80,0.3);border-radius:8px;padding:6px 10px;color:#ffcccc;font-size:12px;outline:none;}
+  #api-save{background:rgba(200,80,40,0.5);border:1px solid rgba(255,120,80,0.4);border-radius:8px;padding:6px 14px;color:#ffddcc;font-size:12px;cursor:pointer;}
+  #api-label{font-size:11px;color:#ff9977;}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div id="logo">
+    <span id="logo-icon">🌾</span>
+    <div>
+      <div id="logo-title">AgriSense AI</div>
+      <div id="logo-sub">விவசாய உதவியாளர் · தமிழ்நாடு</div>
+    </div>
+  </div>
+  <div id="badge">🟢 இயங்குகிறது</div>
+</div>
+
+<div id="api-bar">
+  <span id="api-label">🔑 API Key:</span>
+  <input id="api-input" type="password" placeholder="sk-ant-... உங்கள் key-ஐ இங்கே paste பண்ணுங்கள்"/>
+  <button id="api-save" onclick="saveKey()">சேமி ✓</button>
+</div>
+
+<div id="chat"></div>
+
+<div id="chips">
+  <button class="chip" onclick="quickSend('என் தக்காளி இலைகள் மஞ்சளாகின்றன 🍅')">தக்காளி இலை மஞ்சள் 🍅</button>
+  <button class="chip" onclick="quickSend('நெல் பயிருக்கு எப்போது தண்ணீர் பாய்ச்சணும்?')">நெல் நீர்ப்பாசனம் 🌾</button>
+  <button class="chip" onclick="quickSend('வெங்காயத்திற்கு நல்ல விலை எப்போது கிடைக்கும்?')">வெங்காய விலை 🧅</button>
+  <button class="chip" onclick="quickSend('இயற்கையாக பூச்சி கட்டுப்படுத்துவது எப்படி?')">இயற்கை பூச்சி 🌿</button>
+  <button class="chip" onclick="quickSend('ஜூன் மாதம் என்ன பயிர் போடலாம்?')">ஜூன் பயிர் ☀️</button>
+</div>
+
+<div id="preview-bar">
+  <img id="preview-thumb" src="" alt=""/>
+  <span id="preview-label">படம் தயார் — கேள்வி கேளுங்கள்</span>
+  <button id="remove-btn" onclick="removeImage()">✕</button>
+</div>
+
+<div id="input-area">
+  <div id="input-wrap">
+    <button id="upload-btn" onclick="document.getElementById('file-input').click()">📷</button>
+    <input id="file-input" type="file" accept="image/*" style="display:none" onchange="handleImage(event)"/>
+    <textarea id="msg-input" rows="1" placeholder="உங்கள் பயிர், வானிலை, சந்தை விலை பற்றி கேளுங்கள்..." onkeydown="handleKey(event)"></textarea>
+    <button id="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+  <div id="footer-txt">AgriSense AI · தமிழ்நாடு விவசாயிகளுக்காக 🌾</div>
+</div>
+
+<script>
+let messages = [];
+let uploadedImage = null;
+let apiKey = localStorage.getItem('agrisense_key') || '';
+
+if(apiKey) {
+  document.getElementById('api-input').value = apiKey;
+  document.getElementById('api-bar').style.display = 'none';
+}
+
+const SYSTEM = `நீங்கள் AgriSense AI — தமிழ்நாட்டு விவசாயிகளுக்காக உருவாக்கப்பட்ட விவசாய உதவியாளர். எப்போதும் தமிழிலேயே பதில் சொல்லுங்கள். பயிர் நோய், நீர்ப்பாசனம், சந்தை விலை, விவசாய ஆலோசனை எல்லாம் தமிழில் மட்டுமே சொல்லுங்கள். படம் பார்த்தால் பயிரின் நோயை கண்டறிந்து தமிழில் விளக்கவும்.`;
+
+function saveKey() {
+  const key = document.getElementById('api-input').value.trim();
+  if(!key.startsWith('sk-')) { alert('சரியான API key இல்லை! sk-ant-... என்று தொடங்கணும்'); return; }
+  apiKey = key;
+  localStorage.setItem('agrisense_key', key);
+  document.getElementById('api-bar').style.display = 'none';
+  addMessage('assistant', 'வணக்கம்! 🌱 API key சேமிக்கப்பட்டது! இப்போது கேள்விகள் கேளுங்கள். உங்கள் பயிர் பற்றி சொல்லுங்கள்! 🌾');
+}
+
+function addMessage(role, content, imgSrc) {
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className = `row ${role}`;
+
+  if(role === 'ai') {
+    row.innerHTML = `<div class="av">🌱</div><div class="bubble ai-bubble">${content}</div>`;
+  } else {
+    let imgHtml = imgSrc ? `<img src="${imgSrc}" class="sent-img"/>` : '';
+    row.innerHTML = `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;max-width:78%">${imgHtml}<div class="bubble user-bubble">${content}</div></div><div class="uav">👩‍🌾</div>`;
+  }
+
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+  return row;
+}
+
+function addThinking() {
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className = 'row ai';
+  row.id = 'thinking-row';
+  row.innerHTML = `<div class="av">🌱</div><div class="bubble ai-bubble"><span class="thinking">AgriSense யோசிக்கிறது...</span></div>`;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function removeThinking() {
+  const t = document.getElementById('thinking-row');
+  if(t) t.remove();
+}
+
+function handleImage(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    uploadedImage = { base64: ev.target.result.split(',')[1], preview: ev.target.result, type: file.type || 'image/jpeg' };
+    document.getElementById('preview-thumb').src = ev.target.result;
+    document.getElementById('preview-bar').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function removeImage() {
+  uploadedImage = null;
+  document.getElementById('preview-bar').style.display = 'none';
+}
+
+function handleKey(e) {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function quickSend(text) {
+  document.getElementById('msg-input').value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  if(!apiKey) { alert('முதலில் API key-ஐ மேலே உள்ள பெட்டியில் paste பண்ணுங்கள்!'); return; }
+
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if(!text && !uploadedImage) return;
+
+  const displayText = text || 'படம் அனுப்பியுள்ளேன் — என்ன பிரச்சனை?';
+  input.value = '';
+
+  addMessage('user', displayText, uploadedImage?.preview);
+
+  // Build API message
+  let userContent;
+  if(uploadedImage) {
+    userContent = [
+      { type: 'image', source: { type: 'base64', media_type: uploadedImage.type, data: uploadedImage.base64 }},
+      { type: 'text', text: displayText }
+    ];
+  } else {
+    userContent = displayText;
+  }
+
+  messages.push({ role: 'user', content: userContent });
+  uploadedImage = null;
+  document.getElementById('preview-bar').style.display = 'none';
+
+  addThinking();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: messages
+      })
+    });
+
+    const data = await res.json();
+    removeThinking();
+
+    if(data.error) {
+      addMessage('ai', `⚠️ பிழை: ${data.error.message}`);
+      return;
+    }
+
+    const reply = data.content?.map(b => b.text||'').join('') || 'மீண்டும் முயற்சிக்கவும்.';
+    messages.push({ role: 'assistant', content: reply });
+    addMessage('ai', reply.replace(/\n/g,'<br/>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>'));
+
+  } catch(err) {
+    removeThinking();
+    addMessage('ai', '⚠️ இணைப்பில் பிழை. மீண்டும் முயற்சிக்கவும்.');
+  }
+}
+
+// Welcome message
+if(!apiKey) {
+  addMessage('ai', 'வணக்கம்! 🌾 மேலே உள்ள பெட்டியில் உங்கள் <strong>Anthropic API Key</strong> (sk-ant-...) paste பண்ணி "சேமி" பட்டன் அழுத்துங்கள்!');
+} else {
+  addMessage('ai', 'வணக்கம்! 🌱 <strong>AgriSense AI</strong>-க்கு வரவேற்கிறோம்!<br/><br/>• 🌾 பயிர் நோய் கண்டறிதல்<br/>• 🌦️ நீர்ப்பாசன ஆலோசனை<br/>• 💰 சந்தை விலை வழிகாட்டுதல்<br/>• 🧑‍🌾 விவசாய குறிப்புகள்<br/><br/>என்ன பயிர் போட்டிருக்கீங்க? 🌿');
+}
+</script>
+</body>
 </html>
